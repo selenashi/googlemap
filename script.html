@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>My favorite places</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+      #map_wrapper {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id = "map_wrapper">
+      <div id="map">
+      </div>
+    </div>
+    <div class="tags">
+      <ul>
+        <li class="current"><label><input type="checkbox" id="all">All &nbsp;</label></li>
+        <li><label><input type="checkbox" name="momosushi" id="momosushi">Momo Sushi &nbsp;</label></li> 
+        <li><label><input type="checkbox" name="purebread" id="purebread">Pure Bread &nbsp;</label></li> 
+        <li><label><input type="checkbox" name="yamato" id="yamato">Yamato &nbsp;</label></li>
+        <li><label><input type="checkbox" name="littlesheep" id="littlesheep">Little Sheep &nbsp;</label></li> 
+      </ul>
+    </div>
+
+    <script>
+
+      function initMap() {
+        
+        var locations = {
+          'momosushi': [49.29012, -123.13441, "Westend sushi shop"],
+          'purebread': [49.28253, -123.10906, "Gastown pastry shop"],
+          'yamato': [49.27663, -123.12562, "Yaletown sushi shop"],
+          'littlesheep': [49.283292, -123.127558, "Downtown hot pot"]
+        };
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 49.283292, lng: -123.127558}
+        });
+        var infowindow = new google.maps.InfoWindow();
+
+        document.querySelectorAll('input[type=checkbox]').forEach(function forEachCheckbox(el)
+        {
+          var key = el.getAttribute('name');
+          if(!key) return; // Special case for 'All'
+
+          var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[key][0], locations[key][1]),
+            map: map,
+            visible: false
+          });
+          google.maps.event.addDomListener(el, 'click', function onCheckboxClick(e)
+          {
+            marker.setVisible(el.checked);
+            if(!el.checked && marker == infowindow.getAnchor()) // Hiding a marker with active info-window
+            {
+              infowindow.close();
+            }
+          });
+          google.maps.event.addListener(marker, 'click', function onMarkerClick(e)
+          {
+            infowindow.setContent(locations[key][2]);
+            infowindow.open(map, marker);
+          })
+        });
+    };
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdLmCeA6vllAD8LB91BIRVt5WmAr2t-pI&callback=initMap">
+    </script>
+  </body>
+</html>
